@@ -23,10 +23,17 @@ let requests = []
 
 wss.on('connection', function connection(client) {
 
-  console.log('client connected')
+  client.on('close', function close(code, reason) {
+    let index = clients.indexOf(client)
+    if (index > -1) {
+      clients.splice(index, 1)
+    }
 
-  client.heatbeat = new Date()
+    console.log(`Client closed, total active clients ${clients.length}`)
+  })
+
   clients.push(client)
+  console.log(`Client connected, total active clients ${clients.length}`)
   
   client.send(JSON.stringify(requests))
 
@@ -41,6 +48,8 @@ wss.on('connection', function connection(client) {
   })
 })
 
+// on(event: "close" | "listening", cb: (this: Server<T>) => void): this;
+
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.get('*', function (req, res) {
@@ -49,6 +58,6 @@ app.get('*', function (req, res) {
   })
 })
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`webhook app started on port ${port}`)
 })
