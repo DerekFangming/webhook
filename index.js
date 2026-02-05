@@ -40,23 +40,33 @@ wss.on('connection', function connection(client) {
   client.on('message', function message(data) {
     let message = `${data}`
 
-    if (message == 'heatbeat') {
-      client.heatbeat = new Date()
-    } else if (message == 'restartLiveStream') {
-      restartLiveStream()
+    if (message == 'clearRequests') {
+      requests = []
     }
   })
 })
 
-// on(event: "close" | "listening", cb: (this: Server<T>) => void): this;
+app.all('/hook', (req, res, next) => {
+  // console.log('Accessing the secret section...' + req.method)
+  // console.log(req.ip)
+
+  let request = {
+    timestamp: new Date(),
+    ip: req.ip,
+    method: req.method,
+    headers: req.headers,
+    query: req.query,
+    body: req.body,
+  }
+
+  requests.unshift(request)
+
+  clients.map(c => c.send(JSON.stringify([request])))
+
+  res.status(200).json({})
+})
 
 app.use(express.static(path.join(__dirname, 'public')))
-
-app.get('*', function (req, res) {
-  fs.readFile(__dirname + '/public/index.html', 'utf8', (err, text) => {
-    res.send(text)
-  })
-})
 
 server.listen(port, () => {
   console.log(`webhook app started on port ${port}`)

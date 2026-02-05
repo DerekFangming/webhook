@@ -1,18 +1,20 @@
 import { CommonModule } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
-import { Router, RouterOutlet } from '@angular/router'
 import { environment } from '../environments/environment'
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule],
+  imports: [CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
 
   connected = true
+  copied = false
+  requests: any[] = []
+  selectedRequest: any = null
   ws: WebSocket | undefined
   
   constructor(){}
@@ -32,6 +34,10 @@ export class AppComponent implements OnInit {
 
     this.ws.onmessage = function (data) {
       console.log('received: %s', data.data)
+
+      let reqs = JSON.parse(data.data)
+
+      that.requests = reqs.concat(that.requests)
     }
 
     this.ws.onclose = function (data) {
@@ -46,6 +52,27 @@ export class AppComponent implements OnInit {
       that.ws?.close()
     }
 
+  }
+
+  clearRequests() {
+    this.ws!.send('clearRequests')
+    this.requests = []
+  }
+
+  viewRequest(req: any) {
+    this.selectedRequest = req
+  }
+
+  copyText(text: string){
+    navigator.clipboard.writeText(text).then(()=> {
+      this.copied = true
+    }).catch(err => {
+      alert('Unable to copy text: ' + err)
+    })
+  }
+
+  dateToLocal(date: string) {
+    return (new Date(date)).toLocaleString()
   }
 
 }

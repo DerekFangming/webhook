@@ -5,8 +5,83 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
+      <span class="navbar-text pointer" (click)="copyText('https://webhook.fmning.com')">
+        https://webhook.fmning.com
+        <span class="badge bg-success" *ngIf="copied"><i class="fa fa-check" aria-hidden="true"></i> Copied</span>
+      </span>
+      
       <ul class="navbar-nav me-auto">
       </ul>
+      <form class="d-flex">
+        <button class="btn btn-outline-success me-2" type="submit">Set Response</button>
+        <button class="btn btn-outline-danger" type="button" (click)="clearRequests()">Clear All</button>
+      </form>
     </div>
   </div>
 </nav>
+
+<div class="container-fluid mt-5" *ngIf="requests.length == 0">
+  <div class="row mt-5">
+    <div class="col mt-5 text-center">
+      <i class="fa fa-lg fa-refresh  fa-spin" aria-hidden="true"></i> <span class="lead ms-2">Waiting on requests</span>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt-3" *ngIf="requests.length > 0">
+  <div class="row">
+    <div class="col-2 overflow-auto vh-100">
+      <table class="table table-striped table-hover">
+        <tbody>
+          <tr class="pointer" scope="col" *ngFor="let req of requests" (click)="viewRequest(req)">
+            <h5 class="card-title mb-0 fw-light">
+              <span class="badge" [ngClass]="req.method == 'GET' ? 'bg-success' : req.method == 'DELETE' ? 'bg-danger' : 'bg-primary'">{{req.method}}</span>
+            </h5>
+            <p class="mb-0">{{ dateToLocal(req.timestamp) }}</p>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-10">
+      <div class="row mt-5" *ngIf="selectedRequest == null">
+        <div class="col text-center">
+          <span class="lead ms-2">Select a request to view details</span>
+        </div>
+      </div>
+
+      <div class="row" *ngIf="selectedRequest != null">
+        <div class="col-12">
+          <p class="lead">Request Details</p>
+        </div>
+        <div class="col-12">
+          <span>
+            <span class="badge" [ngClass]="selectedRequest.method == 'GET' ? 'bg-success' : selectedRequest.method == 'DELETE' ? 'bg-danger' : 'bg-primary'">
+              {{selectedRequest.method}}
+            </span>
+             request from IP <span class="badge bg-secondary">{{selectedRequest.ip}}</span> received at {{dateToLocal(selectedRequest.timestamp)}}
+            </span>
+        </div>
+
+        <div class="col-12 mt-4">
+          <p class="lead">Request Headers</p>
+        </div>
+        <div class="col-12">
+          <table class="table table-sm table-striped">
+            <tbody>
+              <tr *ngFor="let h of selectedRequest.headers | keyvalue">
+                <td>
+                  <p class="mb-0">{{ h.key }}</p>
+                </td>
+                <td>
+                  <p class="mb-0">{{ h.value }}</p>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
