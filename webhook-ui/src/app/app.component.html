@@ -5,9 +5,12 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <span class="navbar-text pointer" (click)="copyText('https://webhook.fmning.com/hook')">
+      <span *ngIf="connected" class="navbar-text pointer" (click)="copyText('https://webhook.fmning.com/hook')">
         https://webhook.fmning.com/hook
         <span class="badge bg-success" *ngIf="copied"><i class="fa fa-check" aria-hidden="true"></i> Copied</span>
+      </span>
+      <span *ngIf="!connected" class="navbar-text text-danger">
+        Disconnected, trying to reconnect
       </span>
       
       <ul class="navbar-nav me-auto">

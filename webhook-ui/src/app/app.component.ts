@@ -63,6 +63,7 @@ export class AppComponent implements OnInit {
 
     this.ws.onclose = function (data) {
       that.connected = false
+      that.requests = []
       
       setTimeout(function() {
         if (!that.connected) that.ngOnInit()
