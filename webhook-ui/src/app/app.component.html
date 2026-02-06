@@ -63,21 +63,41 @@
         </div>
 
         <div class="col-12 mt-4">
-          <p class="lead">Request Headers</p>
-        </div>
-        <div class="col-12">
-          <table class="table table-sm table-striped">
-            <tbody>
-              <tr *ngFor="let h of selectedRequest.headers | keyvalue">
-                <td>
-                  <p class="mb-0">{{ h.key }}</p>
-                </td>
-                <td>
-                  <p class="mb-0">{{ h.value }}</p>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="row">
+            <div class="col-6" style="overflow-x: scroll;">
+              <p class="lead">Request Headers</p>
+              <table class="table table-sm table-striped text-nowrap">
+                <tbody>
+                  <tr *ngFor="let h of selectedRequest.headers | keyvalue">
+                    <td>
+                      <p class="mb-0">{{ h.key }}</p>
+                    </td>
+                    <td>
+                      <p class="mb-0">{{ h.value }}</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <p class="lead mt-2">Query Params</p>
+              <table class="table table-sm table-striped text-nowrap">
+                <tbody>
+                  <tr *ngFor="let h of selectedRequest.query | keyvalue">
+                    <td>
+                      <p class="mb-0">{{ h.key }}</p>
+                    </td>
+                    <td>
+                      <p class="mb-0">{{ h.value }}</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-6">
+              <p class="lead">Request Body</p>
+              <ngx-json-viewer [json]="selectedRequest.body"></ngx-json-viewer>
+            </div>
+          </div>
         </div>
 
       </div>
