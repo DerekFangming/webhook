@@ -5,15 +5,15 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <span class="navbar-text pointer" (click)="copyText('https://webhook.fmning.com')">
-        https://webhook.fmning.com
+      <span class="navbar-text pointer" (click)="copyText('https://webhook.fmning.com/hook')">
+        https://webhook.fmning.com/hook
         <span class="badge bg-success" *ngIf="copied"><i class="fa fa-check" aria-hidden="true"></i> Copied</span>
       </span>
       
       <ul class="navbar-nav me-auto">
       </ul>
       <form class="d-flex">
-        <button class="btn btn-outline-success me-2" type="submit">Set Response</button>
+        <button class="btn btn-outline-success me-2" type="button" (click)="openResponseModal()">Set Response</button>
         <button class="btn btn-outline-danger" type="button" (click)="clearRequests()">Clear All</button>
       </form>
     </div>
@@ -102,6 +102,36 @@
 
       </div>
 
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="responseModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Response Config</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col">
+            <form>
+              <div class="mb-3">
+                <label class="form-label">Response Status</label>
+                <input name="response-status" type="text" class="form-control" [(ngModel)]="response.status">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Response Body</label>
+                <textarea name="response-body"  class="form-control" style="height: 300px" [(ngModel)]="response.body"></textarea>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="saveResponse()">Save</button>
+      </div>
     </div>
   </div>
 </div>

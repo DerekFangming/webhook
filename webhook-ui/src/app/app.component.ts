@@ -1,12 +1,16 @@
 import { CommonModule } from '@angular/common'
+import { FormsModule } from '@angular/forms'
 import { Component, OnInit } from '@angular/core'
 import { environment } from '../environments/environment'
 import { NgxJsonViewerModule } from 'ngx-json-viewer'
+import {Title} from "@angular/platform-browser"
+
+declare var $: any
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, NgxJsonViewerModule],
+  imports: [CommonModule, FormsModule, NgxJsonViewerModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -15,10 +19,14 @@ export class AppComponent implements OnInit {
   connected = true
   copied = false
   requests: any[] = []
+  response: any = {
+    status: 200,
+    body: '{}'
+  }
   selectedRequest: any = null
   ws: WebSocket | undefined
   
-  constructor(){}
+  constructor(private title:Title){}
 
   ngOnInit() {
 
@@ -38,7 +46,19 @@ export class AppComponent implements OnInit {
 
       let reqs = JSON.parse(data.data)
 
-      that.requests = reqs.concat(that.requests)
+      if (reqs.data) {
+        that.requests = reqs.data.concat(that.requests)
+        if (that.requests.length == 0) {
+          that.title.setTitle('Webhook')
+        } else {
+          that.title.setTitle(`(${that.requests.length}) Webhook`)
+        }
+      }
+
+      if (reqs.response) {
+        that.response = reqs.response
+      }
+
     }
 
     this.ws.onclose = function (data) {
@@ -56,12 +76,21 @@ export class AppComponent implements OnInit {
   }
 
   clearRequests() {
-    this.ws!.send('clearRequests')
+    this.ws!.send(JSON.stringify({op: 'clearRequests'}))
     this.requests = []
+    this.title.setTitle('Webhook')
   }
 
   viewRequest(req: any) {
     this.selectedRequest = req
+  }
+
+  openResponseModal() {
+    $("#responseModal").modal('show')
+  }
+
+  saveResponse() {
+    this.ws!.send(JSON.stringify({op: 'saveResponse', response: this.response}))
   }
 
   copyText(text: string){

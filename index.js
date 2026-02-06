@@ -20,6 +20,10 @@ const wss = new WebSocket.Server({
 
 let clients = []
 let requests = []
+let response = {
+  status: 200,
+  body: '{}'
+}
 
 wss.on('connection', function connection(client) {
 
@@ -35,21 +39,20 @@ wss.on('connection', function connection(client) {
   clients.push(client)
   console.log(`Client connected, total active clients ${clients.length}`)
   
-  client.send(JSON.stringify(requests))
+  client.send(JSON.stringify({data: requests, response: response}))
 
   client.on('message', function message(data) {
-    let message = `${data}`
+    let message = JSON.parse(data)
 
-    if (message == 'clearRequests') {
+    if (message.op == 'clearRequests') {
       requests = []
+    } else if (message.op == 'saveResponse') {
+      response = message.response
     }
   })
 })
 
 app.all('/hook', (req, res, next) => {
-  // console.log('Accessing the secret section...' + req.method)
-  // console.log(req.ip)
-
   let request = {
     timestamp: new Date(),
     ip: req.ip,
@@ -61,9 +64,9 @@ app.all('/hook', (req, res, next) => {
 
   requests.unshift(request)
 
-  clients.map(c => c.send(JSON.stringify([request])))
+  clients.map(c => c.send(JSON.stringify({data: [request]})))
 
-  res.status(200).json({})
+  res.status(response.status).json(JSON.parse(response.body))
 })
 
 app.use(express.static(path.join(__dirname, 'public')))
