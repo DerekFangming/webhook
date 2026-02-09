@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { FormsModule } from '@angular/forms'
-import { Component, OnInit } from '@angular/core'
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core'
 import { environment } from '../environments/environment'
 import { NgxJsonViewerModule } from 'ngx-json-viewer'
-import {Title} from "@angular/platform-browser"
+import { Title } from "@angular/platform-browser"
 
 declare var $: any
 
@@ -11,10 +11,10 @@ declare var $: any
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, FormsModule, NgxJsonViewerModule],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  templateUrl: './app.html',
+  styleUrl: './app.css'
 })
-export class AppComponent implements OnInit {
+export class App implements OnInit {
 
   connected = true
   copied = false
@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
   selectedRequest: any = null
   ws: WebSocket | undefined
   
-  constructor(private title:Title){}
+  constructor(private title:Title, private cdr: ChangeDetectorRef){}
 
   ngOnInit() {
 
@@ -58,7 +58,8 @@ export class AppComponent implements OnInit {
       if (reqs.response) {
         that.response = reqs.response
       }
-
+      
+      that.cdr.detectChanges()
     }
 
     this.ws.onclose = function (data) {
@@ -97,6 +98,7 @@ export class AppComponent implements OnInit {
   copyText(text: string){
     navigator.clipboard.writeText(text).then(()=> {
       this.copied = true
+      this.cdr.detectChanges()
     }).catch(err => {
       alert('Unable to copy text: ' + err)
     })
