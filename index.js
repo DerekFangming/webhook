@@ -62,6 +62,11 @@ app.all('/hook', (req, res, next) => {
     body: req.body,
   }
 
+  let forwardedFor = req.get('x-forwarded-for');
+  if (forwardedFor != undefined) {
+    request.ip = forwardedFor.split(',')[0]
+  }
+
   requests.unshift(request)
 
   clients.map(c => c.send(JSON.stringify({data: [request]})))
