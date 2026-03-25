@@ -84,7 +84,12 @@ export class App implements OnInit {
   }
 
   viewRequest(req: any) {
+    if (this.selectedRequest != null) {
+      this.selectedRequest.selected = false
+    }
+    
     this.selectedRequest = req
+    this.selectedRequest.selected = true
   }
 
   openResponseModal() {
